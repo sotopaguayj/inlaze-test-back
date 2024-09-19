@@ -24,7 +24,9 @@ async function bootstrap(): Promise<void> {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, document);
-  app.enableCors();
+  app.enableCors({
+    origin: "*",
+  });
 
   await app.listen(process.env.APP_PORT || 3001);
   logger.log(`Server running on port ${process.env.APP_PORT}`);

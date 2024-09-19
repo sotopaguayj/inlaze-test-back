@@ -70,8 +70,8 @@ export class FavouritesController {
       );
     }
   }
-  @Get(":id")
-  @ApiOperation({ summary: "Returns all favourites for a user by ID" })
+  @Get()
+  @ApiOperation({ summary: "Returns all favourites for a user by ID Session" })
   @ApiParam({
     name: "id",
     type: String,
@@ -102,9 +102,9 @@ export class FavouritesController {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: "Internal server error",
   })
-  async getFavourites(@Param("id") userId: string, @Res() res: Response) {
+  async getFavourites(@Res() res: Response, @Request() req) {
     try {
-      const { status, ...rest } = await this.favouritesService.allFavourites(userId);
+      const { status, ...rest } = await this.favouritesService.allFavourites(req.user.sub);
       return res.status(status).json(rest);
     } catch (error) {
       throw new HttpException(
