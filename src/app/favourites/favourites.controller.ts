@@ -1,4 +1,14 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Res } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Request,
+  Res,
+} from "@nestjs/common";
 import { FavouritesService } from "./favourites.service";
 import { Response } from "express";
 import { FavouriteDto } from "./dto/favourite.dto";
@@ -24,16 +34,8 @@ export class FavouritesController {
     description: "Movie data to add or remove from favourites",
     examples: {
       valid: {
-        summary: "Valid example",
+        summary: "example",
         value: {
-          userId: "cm12hvxib0000b63royy9pjtw",
-          movieId: "1",
-        },
-      },
-      invalid: {
-        summary: "Invalid example",
-        value: {
-          userId: "string",
           movieId: "string",
         },
       },
@@ -55,9 +57,10 @@ export class FavouritesController {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: "Internal server error",
   })
-  async manageFavourite(@Body() body: FavouriteDto, @Res() res: Response) {
+  async manageFavourite(@Body() body: FavouriteDto, @Res() res: Response, @Request() req) {
+    const { movieId } = body;
     try {
-      const { status, ...rest } = await this.favouritesService.setFavoutite(body);
+      const { status, ...rest } = await this.favouritesService.setFavoutite(movieId, req.user.sub);
       return res.status(status).json(rest);
     } catch (error) {
       console.log(error);

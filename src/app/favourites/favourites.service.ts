@@ -1,7 +1,6 @@
 import { HttpStatus, Injectable, OnModuleInit } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 import { CustomResponse } from "src/utils/customResponse";
-import { FavouriteDto } from "./dto/favourite.dto";
 import { UsersService } from "../users/users.service";
 
 @Injectable()
@@ -14,8 +13,7 @@ export class FavouritesService extends PrismaClient implements OnModuleInit {
     super();
   }
 
-  async setFavoutite(body: FavouriteDto): Promise<CustomResponse> {
-    const { movieId, userId } = body;
+  async setFavoutite(movieId: string, userId: string): Promise<CustomResponse> {
     const exist = await this.favourites.findFirst({
       where: {
         movieId,
