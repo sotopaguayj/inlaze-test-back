@@ -63,8 +63,14 @@ export class AuthController {
     try {
       const userAgent = req.headers["user-agent"];
       const ip = req.ip;
-      const { status, ...rest } = await this.authService.singIn(body, userAgent, ip);
-      return res.status(status).json(rest);
+      const { status, message, access_token } = await this.authService.singIn(body, userAgent, ip);
+      return res
+        .status(status)
+        .json({ access_token, message })
+        .setHeader(
+          "Set-Cookie",
+          `token=${access_token}; Path=/; HttpOnly; Secure; SameSite=Strict`,
+        );
     } catch (error) {
       throw new HttpException(
         "Error del servidor, intente nuevamente",
