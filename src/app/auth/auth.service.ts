@@ -22,7 +22,7 @@ export class AuthService extends PrismaClient implements OnModuleInit {
   async singIn(body: SingInDto, ua: any, ip: any): Promise<CustomResponse> {
     const { email, password } = body;
     try {
-      const user = await this.userService.existUser(email);
+      const user = await this.user.findFirst({ where: { email }, include: { favourites: true } });
       if (!user) return { status: HttpStatus.NOT_FOUND, message: "Usuario no encontrado" };
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return { status: HttpStatus.UNAUTHORIZED, message: "Clave inorrecta" };
@@ -36,6 +36,7 @@ export class AuthService extends PrismaClient implements OnModuleInit {
       });
       return {
         access_token: await this.jwtService.signAsync(payload),
+        favs: user.favourites,
         status: HttpStatus.OK,
         message: "Inicio de sesion exitoso",
       };
